@@ -1,0 +1,91 @@
+.billing-history-container {
+    margin: 20px;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .table th, .table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .table th {
+    background-color: #2c3e50;
+    color: #ffffff;
+  }
+  
+  .table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .table tr:hover {
+    background-color: #bdc3c7;
+  }
+
+  
+
+
+  /* Added style for headers of Home and Billing History navigation buttons is shown below*/
+
+
+
+
+  /* Reset default list styles */
+/* Navigation Bar Styles */
+.navbar {
+  background-color: #ffffff; /* White background */
+  padding: 16px 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: center; /* Center the navigation links */
+}
+
+.nav-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 20px; /* Creates space between the navigation items */
+}
+
+.nav-item {
+  text-transform: uppercase; /* Makes text uppercase */
+  font-weight: 600; /* Bold font weight */
+}
+
+.nav-item a, .nav-item button {
+  text-decoration: none;
+  color: #333;
+  padding: 8px 16px;
+  border-radius: 4px; /* Rounded corners */
+  transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effects */
+}
+
+.nav-item a:hover,
+.nav-item a:focus {
+  background-color: #0275d8; /* Blue background on hover/focus */
+  color: #ffffff; /* White text on hover/focus */
+}
+
+/* Active link styles */
+.nav-item .active {
+  background-color: #0275d8; /* Blue background for active link */
+  color: #ffffff; /* White text for active link */
+}
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,79 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #fff;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+.react-calendar {
+  max-width: 500px;
+  margin: auto;
+  box-shadow: 0 4px 8px 0 rgba(213, 11, 11, 0.2);
+  padding: 20px;
+  background-color: #187bdf;
+  border-radius: 10px;
+}
+.react-calendar__navigation button {
+  background-color: #cc0b75;
+  color: rgb(15, 67, 241);
+  font-size: 1.2em;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  margin: 2px;
+}
+
+
+
+/* Add this CSS in your stylesheets */
+.react-calendar .react-calendar__tile--highlighted {
+  background-color: #0b776e;
+  color: white;
+}
+
+/* Optional: Customize other styles */
+.react-calendar {
+  max-width: 400px;
+  margin: auto;
+}
+
+/* Custom styling for highlighted range */
+
+.react-calendar__month-view__days__day--weekend {
+  color: #ee740a !important;
+}
+
+.react-calendar__tile--now{
+  background: unset !important;
+}
+.react-calendar__tile{
+  margin: 5px;
+}
+.highlighted-range {
+  /* background-color:  #1c84ee !important; */
+  border:1px solid #1c84ee !important;
+  border-radius: 5px;
+}
+.highlighted-available-range {
+  border: 2px solid silver !important;
+  border-radius: 5px;
+  background-color: lightgreen !important;
+  padding: 10px;
+
+}
+
+.highlighted-unavailable-range {
+  /* background-color: lightcoral !important; */
+  border: 2px solid sol !important;
+  background-color: lightcoral !important;
+  border-radius: 5px;
+
+}
+

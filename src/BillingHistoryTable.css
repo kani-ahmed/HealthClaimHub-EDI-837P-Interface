@@ -1,0 +1,45 @@
+/* BillingHistoryTable.css */
+.table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 2rem 0;
+  }
+  
+  .table th,
+  .table td {
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+  }
+  
+  .table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .table th {
+    padding: 0.75rem 0.5rem;
+    text-align: left;
+    background-color: #04AA6D;
+    color: white;
+  }
+  
+  .search-input {
+    margin: 1rem 0;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 0.25rem;
+  }
+  
+  .chart-container {
+    margin: 2rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  /* BillingHistoryTable.css */
+.table {
+    margin: 2rem 0;
+  }
+  
+  
+  /* Add more styles as needed */
+  
