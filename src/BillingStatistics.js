@@ -28,7 +28,7 @@ const BillingStatistics = ({ billingData }) => {
     labels,
     datasets: [
       {
-        label: 'Billing Dates Count',
+        label: 'Total Claims Submitted', //Billing Dates Count
         data: billingData.map(user => user.dateRanges.length),
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
@@ -42,7 +42,7 @@ const BillingStatistics = ({ billingData }) => {
     labels,
     datasets: [
       {
-        label: 'Total Claim Charge',
+        label: 'Cumulative Claim Charges', // Updated label
         data: billingData.map(user => user.totalClaimCharge),
         backgroundColor: 'rgba(153, 102, 255, 0.2)',
         borderColor: 'rgba(153, 102, 255, 1)',

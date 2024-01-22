@@ -18,10 +18,11 @@ const BillingHistoryTable = ({ billingData, searchFilter }) => {
   const columns = React.useMemo(
     () => [
       { Header: 'Client Name', accessor: d => `${d.firstName} ${d.lastName}` },
-      { Header: 'Claim Start Date', accessor: 'claimStartDate' },
-      { Header: 'Claim End Date', accessor: 'claimEndDate' },
-      { Header: 'Claim Submission Status', accessor: 'submissionStatus' }, // New column for submission status
-      { Header: 'Claim Submission Date', accessor: 'submissionDate' }, // New column for submission status
+      { Header: 'Claim Service Start Date', accessor: 'claimStartDate' },
+      { Header: 'Claim Service End Date', accessor: 'claimEndDate' },
+      { Header: 'Claim Submission Date', accessor: 'submissionDate' }, // New column for submission
+      { Header: 'Claim Total Charge Amount', accessor: 'currentClaimAmount' }, // New column for submission
+      { Header: 'Claim Submission Status', accessor: 'submissionStatus' }, // New column for submission status 
       // ... other columns
     ],
     []
@@ -36,8 +37,9 @@ const BillingHistoryTable = ({ billingData, searchFilter }) => {
           lastName: user.lastName,
           claimStartDate: dateRange.startDate,
           claimEndDate: dateRange.endDate,
-          submissionStatus: dateRange.submissionStatus, // Include submission status in row data
           submissionDate: dateRange.submissionDate,
+          currentClaimAmount: dateRange.currentClaimAmount,
+          submissionStatus: dateRange.submissionStatus, // Include submission status in row data
         });
       });
     });
