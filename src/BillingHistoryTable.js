@@ -20,6 +20,7 @@ const BillingHistoryTable = ({ billingData, searchFilter }) => {
       { Header: 'Name', accessor: d => `${d.firstName} ${d.lastName}` },
       { Header: 'Claim Start Date', accessor: 'claimStartDate' },
       { Header: 'Claim End Date', accessor: 'claimEndDate' },
+      { Header: 'Claim Submission Status', accessor: 'submissionStatus' }, // New column for submission status
       // ... other columns
     ],
     []
@@ -34,6 +35,7 @@ const BillingHistoryTable = ({ billingData, searchFilter }) => {
           lastName: user.lastName,
           claimStartDate: dateRange.startDate,
           claimEndDate: dateRange.endDate,
+          submissionStatus: dateRange.submissionStatus, // Include submission status in row data
         });
       });
     });
