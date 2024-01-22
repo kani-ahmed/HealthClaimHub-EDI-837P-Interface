@@ -17,7 +17,7 @@ const GlobalFilter = ({ preGlobalFilteredRows, globalFilter, setGlobalFilter }) 
 const BillingHistoryTable = ({ billingData, searchFilter }) => {
   const columns = React.useMemo(
     () => [
-      { Header: 'Name', accessor: d => `${d.firstName} ${d.lastName}` },
+      { Header: 'Client Name', accessor: d => `${d.firstName} ${d.lastName}` },
       { Header: 'Claim Start Date', accessor: 'claimStartDate' },
       { Header: 'Claim End Date', accessor: 'claimEndDate' },
       { Header: 'Claim Submission Status', accessor: 'submissionStatus' }, // New column for submission status
