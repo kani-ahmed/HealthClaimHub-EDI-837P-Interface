@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useState } from "react";
 import { useAuth } from "./AuthContext";
 import Login from "./Login";
-import Layout from "./Layout";
+//import Layout from "./Layout";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { DatePicker } from '@mui/x-date-pickers';
@@ -189,7 +189,6 @@ const handleFieldChange = (index, fieldName, value) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Layout>
         <Container>
           <Typography variant="h4" align="center" gutterBottom></Typography>
           <ToastContainer />
@@ -258,7 +257,6 @@ const handleFieldChange = (index, fieldName, value) => {
             </Button>
           </Stack>
         </Container>
-      </Layout>
     </LocalizationProvider>
   );    
 };

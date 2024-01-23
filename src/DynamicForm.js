@@ -566,489 +566,402 @@ const DynamicForm = () => {
   // console.log(arrayValue, formData[0].datesToSkip)
   console.log("Current selectedFirstName:", selectedFirstName);
   return (
-      <Container>
-        <Typography variant="h4" align="center" gutterBottom>
-          Automated Claims Billing System
-        </Typography>
-        <ToastContainer />
+    <Container>
+      <Typography variant="h4" align="center" gutterBottom>
+        Automated Claims Billing System
+      </Typography>
+      <ToastContainer />
 
-        {/* <Grid container spacing={2}> */}
-        {/* Forms Section */}
-        {/* <Grid item xs={12} spacing={2}> */}
-        {/* <Grid container spacing={2}> */}
-        {forms.map((form, index) => (
-          // <Container >
-          <Paper
-            sx={{ p: 2, borderRadius: 1, mb: 2 }}
-            key={index}
-            elevation={3}
+      {/* <Grid container spacing={2}> */}
+      {/* Forms Section */}
+      {/* <Grid item xs={12} spacing={2}> */}
+      {/* <Grid container spacing={2}> */}
+      {forms.map((form, index) => (
+        // <Container >
+        <Paper sx={{ p: 2, borderRadius: 1, mb: 2 }} key={index} elevation={3}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 2,
+              width: "100%", // Ensure the box takes the full width
+            }}
           >
+            <Typography variant="h6" gutterBottom>
+              Claim Form {index + 1}
+            </Typography>
+
             <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                mb: 2,
-                width: "100%", // Ensure the box takes the full width
-              }}
+              sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}
             >
-              <Typography variant="h6" gutterBottom>
-                Claim Form {index + 1}
-              </Typography>
-
-              <Box
-                sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => handleReset(index)}
               >
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  onClick={() => handleReset(index)}
-                >
-                  Reset Form
-                </Button>
-              </Box>
-
-              <IconButton onClick={() => toggleCollapse(index)}>
-                <ExpandMoreIcon rotate={form.collapsed ? 0 : 180} />
-              </IconButton>
+                Reset Form
+              </Button>
             </Box>
-            <Collapse in={!form.collapsed}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={8}>
-                  <Autocomplete
-                    id="name-autocomplete"
-                    key={`autocomplete-${resetCounter}`}
-                    options={nameSuggestions}
-                    freeSolo
-                    onInputChange={(event, newValue) => {
-                      suggestNames(newValue);
-                    }}
-                    value={selectedFirstName}
-                    onChange={(event, newValue) => {
-                      setSelectedFirstName(newValue);
-                      handleSelectName(newValue, index);
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="First Name"
-                        fullWidth
-                        sx={{ mb: 2 }}
-                        required
-                        onChange={(e) => {
-                          dispatch({
-                            type: "onChange",
-                            index: index,
-                            fieldName: "firstName",
-                            value: e.target.value,
-                          });
-                        }}
-                        inputProps={{
-                          ...params.inputProps,
-                          id: `${index}-firstName`,
-                        }}
-                      />
-                    )}
-                  />
 
-                  <TextField
-                    label="Last Name"
-                    fullWidth
-                    sx={{ mb: 2 }}
-                    error={
-                      fieldValidation.lastName.touched &&
-                      !fieldValidation.lastName.valid
-                    }
-                    helperText={
-                      fieldValidation.lastName.touched &&
-                      !fieldValidation.lastName.valid
-                        ? "This field is required"
-                        : ""
-                    }
-                    value={formData[index].lastName}
-                    onBlur={() => handleFieldBlur("lastName")}
-                    onChange={(e) =>
-                      dispatch({
-                        type: "onChange",
-                        index: index,
-                        fieldName: "lastName",
-                        value: e.target.value,
-                      })
-                    }
-                    inputProps={{
-                      id: `${index}-lastName`,
-                      "aria-required": true,
-                    }}
-                  />
-                  <TextField
-                    label="ID Number"
-                    fullWidth
-                    sx={{ mb: 2 }}
-                    inputProps={{
-                      id: `${index}-idNumber`,
-                      "aria-required": true,
-                    }}
-                    value={formData[index].idNumber}
-                    onChange={(e) =>
-                      dispatch({
-                        type: "onChange",
-                        index: index,
-                        fieldName: "idNumber",
-                        value: e.target.value,
-                      })
-                    }
-                  />
-                  <TextField
-                    label="Address"
-                    fullWidth
-                    sx={{ mb: 2 }}
-                    inputProps={{
-                      id: `${index}-address`,
-                      "aria-required": true,
-                    }}
-                    value={formData[index].address}
-                    onChange={(e) =>
-                      dispatch({
-                        type: "onChange",
-                        index: index,
-                        fieldName: "address",
-                        value: e.target.value,
-                      })
-                    }
-                  />
-                  <TextField
-                    label="Birthday"
-                    fullWidth
-                    sx={{ mb: 2 }}
-                    placeholder="YYYYMMDD"
-                    inputProps={{
-                      id: `${index}-birthday`,
-                      "aria-required": true,
-                    }}
-                    value={formData[index].birthday}
-                    onChange={(e) =>
-                      dispatch({
-                        type: "onChange",
-                        index: index,
-                        fieldName: "birthday",
-                        value: e.target.value,
-                      })
-                    }
-                  />
-                  <TextField
-                    label="Zipcode"
-                    fullWidth
-                    sx={{ mb: 2 }}
-                    inputProps={{
-                      id: `${index}-zipcode`,
-                      "aria-required": true,
-                    }}
-                    value={formData[index].zipcode}
-                    onChange={(e) =>
-                      dispatch({
-                        type: "onChange",
-                        index: index,
-                        fieldName: "zipcode",
-                        value: e.target.value,
-                      })
-                    }
-                  />
-                  <TextField
-                    label="Rate"
-                    fullWidth
-                    sx={{ mb: 2 }}
-                    inputProps={{
-                      id: `${index}-rate`,
-                      "aria-required": true,
-                      //inputMode: "numeric", // Set inputMode to "numeric"
-                      //step: "0.01", // Optional: To allow decimal values
-                    }}
-                    value={formData[index].rate}
-                    onChange={(e) =>
-                      dispatch({
-                        type: "onChange",
-                        index: index,
-                        fieldName: "rate",
-                        value: e.target.value,
-                      })
-                    }
-                  />
-                  <Divider
-                    sx={{ mb: 2 }}
-                    style={{ backgroundColor: "rebeccapurple" }}
-                  />
-                  <Typography variant="h6" gutterBottom>
-                    Service Days and Hours:
-                  </Typography>
+            <IconButton onClick={() => toggleCollapse(index)}>
+              <ExpandMoreIcon rotate={form.collapsed ? 0 : 180} />
+            </IconButton>
+          </Box>
+          <Collapse in={!form.collapsed}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={8}>
+                <Autocomplete
+                  id="name-autocomplete"
+                  key={`autocomplete-${resetCounter}`}
+                  options={nameSuggestions}
+                  freeSolo
+                  onInputChange={(event, newValue) => {
+                    suggestNames(newValue);
+                  }}
+                  value={selectedFirstName}
+                  onChange={(event, newValue) => {
+                    setSelectedFirstName(newValue);
+                    handleSelectName(newValue, index);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="First Name"
+                      fullWidth
+                      sx={{ mb: 2 }}
+                      required
+                      onChange={(e) => {
+                        dispatch({
+                          type: "onChange",
+                          index: index,
+                          fieldName: "firstName",
+                          value: e.target.value,
+                        });
+                      }}
+                      inputProps={{
+                        ...params.inputProps,
+                        id: `${index}-firstName`,
+                      }}
+                    />
+                  )}
+                />
 
-                  <Grid container spacing={2}>
-                    {/* {Object.entries(daysAndHours).map(
+                <TextField
+                  label="Last Name"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                  error={
+                    fieldValidation.lastName.touched &&
+                    !fieldValidation.lastName.valid
+                  }
+                  helperText={
+                    fieldValidation.lastName.touched &&
+                    !fieldValidation.lastName.valid
+                      ? "This field is required"
+                      : ""
+                  }
+                  value={formData[index].lastName}
+                  onBlur={() => handleFieldBlur("lastName")}
+                  onChange={(e) =>
+                    dispatch({
+                      type: "onChange",
+                      index: index,
+                      fieldName: "lastName",
+                      value: e.target.value,
+                    })
+                  }
+                  inputProps={{
+                    id: `${index}-lastName`,
+                    "aria-required": true,
+                  }}
+                />
+                <TextField
+                  label="ID Number"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                  inputProps={{
+                    id: `${index}-idNumber`,
+                    "aria-required": true,
+                  }}
+                  value={formData[index].idNumber}
+                  onChange={(e) =>
+                    dispatch({
+                      type: "onChange",
+                      index: index,
+                      fieldName: "idNumber",
+                      value: e.target.value,
+                    })
+                  }
+                />
+                <TextField
+                  label="Address"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                  inputProps={{
+                    id: `${index}-address`,
+                    "aria-required": true,
+                  }}
+                  value={formData[index].address}
+                  onChange={(e) =>
+                    dispatch({
+                      type: "onChange",
+                      index: index,
+                      fieldName: "address",
+                      value: e.target.value,
+                    })
+                  }
+                />
+                <TextField
+                  label="Birthday"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                  placeholder="YYYYMMDD"
+                  inputProps={{
+                    id: `${index}-birthday`,
+                    "aria-required": true,
+                  }}
+                  value={formData[index].birthday}
+                  onChange={(e) =>
+                    dispatch({
+                      type: "onChange",
+                      index: index,
+                      fieldName: "birthday",
+                      value: e.target.value,
+                    })
+                  }
+                />
+                <TextField
+                  label="Zipcode"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                  inputProps={{
+                    id: `${index}-zipcode`,
+                    "aria-required": true,
+                  }}
+                  value={formData[index].zipcode}
+                  onChange={(e) =>
+                    dispatch({
+                      type: "onChange",
+                      index: index,
+                      fieldName: "zipcode",
+                      value: e.target.value,
+                    })
+                  }
+                />
+                <TextField
+                  label="Rate"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                  inputProps={{
+                    id: `${index}-rate`,
+                    "aria-required": true,
+                    //inputMode: "numeric", // Set inputMode to "numeric"
+                    //step: "0.01", // Optional: To allow decimal values
+                  }}
+                  value={formData[index].rate}
+                  onChange={(e) =>
+                    dispatch({
+                      type: "onChange",
+                      index: index,
+                      fieldName: "rate",
+                      value: e.target.value,
+                    })
+                  }
+                />
+                <Divider
+                  sx={{ mb: 2 }}
+                  style={{ backgroundColor: "lightred" }}
+                />
+                <Typography variant="h6" gutterBottom>
+                  Service Days and Hours:
+                </Typography>
+
+                <Grid container spacing={2}>
+                  {/* {Object.entries(daysAndHours).map(
                     ([day, { checked, hours }]) => (*/}
-                    {week_days.map((week) => (
-                      <React.Fragment key={week}>
-                        <Grid item xs={6} md={3}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                // id={day}
-                                name="serviceDays"
-                                value={week}
-                                checked={formData[index].serviceDays.includes(
-                                  week.toUpperCase()
-                                )}
-                                onChange={(e) =>
-                                  dispatch({
-                                    type: "checkbox",
-                                    index,
-                                    day: week.toUpperCase(),
-                                  })
-                                }
-                              />
-                            }
-                            label={week}
-                          />
-                        </Grid>
-                        <Grid item xs={6} md={3}>
-                          <TextField
-                            type="number"
-                            // id={`${day}Hours`}
-                            // name={`${day}Hours`}
-                            label={`${week.charAt(0).toUpperCase()}${week.slice(
-                              1
-                            )} Hours`}
-                            fullWidth
-                            inputProps={{ min: 0, max: 24, step: 0.5 }}
-                            disabled={
-                              !formData[index].serviceDays.includes(
+                  {week_days.map((week) => (
+                    <React.Fragment key={week}>
+                      <Grid item xs={6} md={3}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              // id={day}
+                              name="serviceDays"
+                              value={week}
+                              checked={formData[index].serviceDays.includes(
+                                week.toUpperCase()
+                              )}
+                              onChange={(e) =>
+                                dispatch({
+                                  type: "checkbox",
+                                  index,
+                                  day: week.toUpperCase(),
+                                })
+                              }
+                            />
+                          }
+                          label={week}
+                        />
+                      </Grid>
+                      <Grid item xs={6} md={3}>
+                        <TextField
+                          type="number"
+                          // id={`${day}Hours`}
+                          // name={`${day}Hours`}
+                          label={`${week.charAt(0).toUpperCase()}${week.slice(
+                            1
+                          )} Hours`}
+                          fullWidth
+                          inputProps={{ min: 0, max: 24, step: 0.5 }}
+                          disabled={
+                            !formData[index].serviceDays.includes(
+                              week.toUpperCase()
+                            )
+                          }
+                          value={
+                            formData[index].hoursPerDay[
+                              formData[index].serviceDays.indexOf(
                                 week.toUpperCase()
                               )
-                            }
-                            value={
-                              formData[index].hoursPerDay[
-                                formData[index].serviceDays.indexOf(
-                                  week.toUpperCase()
-                                )
-                              ] ?? ""
-                            }
-                            onChange={(e) =>
-                              dispatch({
-                                type: "hours",
-                                index: index,
-                                day: week.toUpperCase(),
-                                value: e.target.value,
-                              })
-                            }
-                          />
-                        </Grid>
-                      </React.Fragment>
-                    ))}
-                  </Grid>
-                  <Divider
-                    sx={{ mb: 2, mt: 2 }}
-                    style={{ backgroundColor: "rebeccapurple" }}
-                  />
-                  <Typography variant="h6" gutterBottom>
-                    Service Start Date and End Date:
-                  </Typography>
-                  <TextField
-                    label="Start Date"
-                    fullWidth
-                    type="date"
-                    sx={{ my: 2 }}
-                    inputProps={{
-                      id: `${index}-startDate`,
-                      "aria-required": true,
-                    }}
-                    InputLabelProps={{ shrink: true }}
-                    value={formData[index].startDate}
-                    onChange={(e) =>
-                      dispatch({
-                        type: "onChange",
-                        index: index,
-                        fieldName: "startDate",
-                        value: e.target.value,
-                      })
-                    }
-                  />
-                  <TextField
-                    label="End Date"
-                    fullWidth
-                    type="date"
-                    sx={{ my: 2 }}
-                    inputProps={{
-                      id: `${index}-endDate`,
-                      "aria-required": true,
-                    }}
-                    InputLabelProps={{ shrink: true }}
-                    value={formData[index].endDate}
-                    onChange={(e) =>
-                      dispatch({
-                        type: "onChange",
-                        index: index,
-                        fieldName: "endDate",
-                        value: e.target.value,
-                      })
-                    }
-                  />
-                  <Divider
-                    sx={{ mb: 2 }}
-                    style={{ backgroundColor: "rebeccapurple" }}
-                  />
-                  <Typography variant="h6" gutterBottom>
-                    Missed Service Days:
-                  </Typography>
-                  <TextField
-                    label="Dates to Skip"
-                    fullWidth
-                    sx={{ my: 2 }}
-                    inputProps={{
-                      id: `${index}-datesToSkip`,
-                    }}
-                    helperText="(comma-separated, e.g., 2023-01-01,2023-01-02)"
-                    value={formData[index].datesToSkip}
-                    onChange={(e) =>
-                      dispatch({
-                        type: "onChange",
-                        index: index,
-                        fieldName: "datesToSkip",
-                        value: e.target.value,
-                      })
-                    }
-                  />
+                            ] ?? ""
+                          }
+                          onChange={(e) =>
+                            dispatch({
+                              type: "hours",
+                              index: index,
+                              day: week.toUpperCase(),
+                              value: e.target.value,
+                            })
+                          }
+                        />
+                      </Grid>
+                    </React.Fragment>
+                  ))}
                 </Grid>
-                <Grid item xs={12} md={4}>
-                  {/* Add your calendar component or visualization here */}
-                  <Container
-                    sx={{ border: 1, p: 2, borderRadius: 1, height: "100%" }}
-                  >
-                    <Typography variant="h6" style={{ textAlign: "center" }}>
-                      Calendar Visualization
-                    </Typography>
-                    <CalendarComponent
-                      highlightedRange={[
-                        formData[index].startDate,
-                        formData[index].endDate,
-                      ]}
-                      excludeDateRange={formData[index].datesToSkip}
-                      selectedDays={formData[index].serviceDays}
-                    />
-                    {/* <DateCalendarValue
-                    range={[formData[index].startDate, formData[index].endDate]}
-                  /> */}
-                  </Container>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <Stack spacing={2}>
-                    <Typography variant="h6" gutterBottom>
-                      Skip Dates
-                    </Typography>
-                    <Box>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            name="datesToSkipRange"
-                            checked={formData[index].datesToSkipRange}
-                            onChange={(e) =>
-                              dispatch({
-                                type: "onChange",
-                                index: index,
-                                fieldName: "datesToSkipRange",
-                                value: e.target.checked,
-                              })
-                            }
-                          />
-                        }
-                        label="Range"
-                      />
-                      {formData[index].datesToSkipRange && (
-                        <>
-                          <TextField
-                            label="Start Date"
-                            fullWidth
-                            type="date"
-                            sx={{ my: 2 }}
-                            inputProps={{
-                              id: `${index}-startDateRange`,
-                              "aria-required": true,
-                            }}
-                            InputLabelProps={{ shrink: true }}
-                            value={formData[index].startDateRange}
-                            onChange={(e) =>
-                              dispatch({
-                                type: "onChange",
-                                index: index,
-                                fieldName: "startDateRange",
-                                value: e.target.value,
-                              })
-                            }
-                          />
-                          <TextField
-                            label="End Date"
-                            fullWidth
-                            type="date"
-                            sx={{ my: 2 }}
-                            inputProps={{
-                              id: `${index}-endDateRange`,
-                              "aria-required": true,
-                            }}
-                            InputLabelProps={{ shrink: true }}
-                            value={formData[index].endDateRange}
-                            onChange={(e) =>
-                              dispatch({
-                                type: "onChange",
-                                index: index,
-                                fieldName: "endDateRange",
-                                value: e.target.value,
-                              })
-                            }
-                          />
-                          <Button
-                            variant="outlined"
-                            onClick={() => {
-                              // Add your logic to add a new date range
-                            }}
-                            startIcon={<AddIcon />}
-                            sx={{ mt: 2 }}
-                          >
-                            Add Range
-                          </Button>
-                        </>
-                      )}
-                    </Box>
-                  </Stack>
-                </Grid>
+                <Divider
+                  sx={{ mb: 2, mt: 2 }}
+                  style={{ backgroundColor: "lightred" }}
+                />
+                <Typography variant="h6" gutterBottom>
+                  Service Start Date and End Date:
+                </Typography>
+                <TextField
+                  label="Start Date"
+                  fullWidth
+                  type="date"
+                  sx={{ my: 2 }}
+                  inputProps={{
+                    id: `${index}-startDate`,
+                    "aria-required": true,
+                  }}
+                  InputLabelProps={{ shrink: true }}
+                  value={formData[index].startDate}
+                  onChange={(e) =>
+                    dispatch({
+                      type: "onChange",
+                      index: index,
+                      fieldName: "startDate",
+                      value: e.target.value,
+                    })
+                  }
+                />
+                <TextField
+                  label="End Date"
+                  fullWidth
+                  type="date"
+                  sx={{ my: 2 }}
+                  inputProps={{
+                    id: `${index}-endDate`,
+                    "aria-required": true,
+                  }}
+                  InputLabelProps={{ shrink: true }}
+                  value={formData[index].endDate}
+                  onChange={(e) =>
+                    dispatch({
+                      type: "onChange",
+                      index: index,
+                      fieldName: "endDate",
+                      value: e.target.value,
+                    })
+                  }
+                />
+                <Divider
+                  sx={{ mb: 2 }}
+                  style={{ backgroundColor: "lightred" }}
+                />
+                <Typography variant="h6" gutterBottom>
+                  Missed Service Days:
+                </Typography>
+                <TextField
+                  label="Dates to Skip"
+                  fullWidth
+                  sx={{ my: 2 }}
+                  inputProps={{
+                    id: `${index}-datesToSkip`,
+                  }}
+                  helperText="(comma-separated, e.g., 2023-01-01,2023-01-02)"
+                  value={formData[index].datesToSkip}
+                  onChange={(e) =>
+                    dispatch({
+                      type: "onChange",
+                      index: index,
+                      fieldName: "datesToSkip",
+                      value: e.target.value,
+                    })
+                  }
+                />
               </Grid>
-            </Collapse>
-            {forms.length > 1 && (
-              <IconButton onClick={() => deleteForm(index)} color="error">
-                <DeleteIcon />
-              </IconButton>
-            )}
-            {/* </Container> */}
-          </Paper>
-        ))}
-        <Stack justifyContent="center" gap={4} direction="row" sx={{ py: 4 }}>
-          <Button
-            variant="outlined"
-            onClick={addForm}
-            startIcon={<AddIcon />}
-            sx={{ mt: 2 }}
-          >
-            Add Form
-          </Button>
-          <Button variant="contained" onClick={handleSubmit} sx={{ mt: 2 }}>
-            Submit Form
-          </Button>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={handleSignOut}
-            sx={{ mt: 2 }}
-          >
-            Sign Out
-          </Button>
-        </Stack>
-      </Container>
+              <Grid item xs={12} md={4}>
+                {/* Add your calendar component or visualization here */}
+                <Container
+                  sx={{ border: 1, p: 2, borderRadius: 1, height: "100%" }}
+                >
+                  <Typography variant="h6" style={{ textAlign: "center" }}>
+                    Calendar Visualization
+                  </Typography>
+                  <CalendarComponent
+                    highlightedRange={[
+                      formData[index].startDate,
+                      formData[index].endDate,
+                    ]}
+                    excludeDateRange={formData[index].datesToSkip}
+                    selectedDays={formData[index].serviceDays}
+                  />
+                </Container>
+              </Grid>
+            </Grid>
+          </Collapse>
+          {forms.length > 1 && (
+            <IconButton onClick={() => deleteForm(index)} color="error">
+              <DeleteIcon />
+            </IconButton>
+          )}
+          {/* </Container> */}
+        </Paper>
+      ))}
+      <Stack justifyContent="center" gap={4} direction="row" sx={{ py: 4 }}>
+        <Button
+          variant="outlined"
+          onClick={addForm}
+          startIcon={<AddIcon />}
+          sx={{ mt: 2 }}
+        >
+          Add Form
+        </Button>
+        <Button variant="contained" onClick={handleSubmit} sx={{ mt: 2 }}>
+          Submit Form
+        </Button>
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={handleSignOut}
+          sx={{ mt: 2 }}
+        >
+          Sign Out
+        </Button>
+      </Stack>
+    </Container>
   );
 };
 
