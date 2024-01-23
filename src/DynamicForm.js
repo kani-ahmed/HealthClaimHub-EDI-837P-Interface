@@ -72,9 +72,8 @@ const DynamicForm = () => {
   };
 
   // Inside your component
-  const { getIdToken } = useAuth(); // Destructure to get the getIdToken function
+  const { getIdToken, showWelcomeMessage  } = useAuth(); // Destructure to get the getIdToken function
   const [resetCounter, setResetCounter] = useState(0);
-
 
   const [forms, setForms] = useState([{ id: 1, collapsed: false }]);
   const [daysAndHours, setDaysAndHours] = useState({
@@ -321,11 +320,8 @@ const handleFirstNameChange = async (e, index, dispatch, getIdToken) => {
 
   // useEffect to show toast when user signs in
   useEffect(() => {
-    if (currentUser) {
-      toast.success(`Welcome back, ${currentUser.email}!`); // Display user's email or any other identifier
-    }
-  }, [currentUser]); // Dependency array with currentUser
-
+    showWelcomeMessage();
+  }, []);
   const handleSignOut = async () => {
     try {
       await signOut();

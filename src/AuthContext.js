@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "./firebase";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AuthContext = createContext();
 
@@ -10,6 +12,26 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const [welcomeShown, setWelcomeShown] = useState(false);
+
+  const showWelcomeMessage = () => {
+    if (!welcomeShown && currentUser) {
+      toast.success(`Welcome back, ${currentUser.email}!`);
+      setWelcomeShown(true);
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      await auth.signOut();
+      setWelcomeShown(false); // Reset the welcomeShown flag here
+      setCurrentUser(null); // Optionally reset the currentUser to null
+    } catch (error) {
+      console.error("Error signing out:", error);
+      // Handle error (e.g., display an error message)
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -27,9 +49,10 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     currentUser,
-    getIdToken, // Adding the new function to the context
+    getIdToken,
     signIn: auth.signInWithEmailAndPassword,
-    signOut: () => auth.signOut(),
+    signOut,
+    showWelcomeMessage,
   };
 
   return (

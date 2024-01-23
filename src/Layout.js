@@ -33,6 +33,11 @@ const Layout = ({ children }) => {
           )}
           {currentUser && (
             <li className="nav-item">
+              <NavLink to="/add-clients" activeClassName="active">Add Clients</NavLink>
+            </li>
+          )}
+          {currentUser && (
+            <li className="nav-item">
               <NavLink to="/logout" onClick={handleSignOut}>Sign Out</NavLink>
             </li>
           )}

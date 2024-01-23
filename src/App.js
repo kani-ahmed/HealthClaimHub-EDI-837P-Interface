@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import DynamicForm from './DynamicForm';
 import Login from './Login';
+import AddClients from './AddClients';
 import BillingHistory from './BillingHistory';
 import Layout from './Layout'; // Import the Layout component
 import { useAuth } from './AuthContext';
@@ -31,6 +32,9 @@ function App() {
                     ) : (
                         <Login />
                     )}
+                </Route>
+                <Route path="/add-clients">
+                    {currentUser ? <AddClients /> : <Login />}
                 </Route>
             </Switch>
         </Router>
