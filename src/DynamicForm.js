@@ -3,8 +3,10 @@ import { useAuth } from "./AuthContext";
 import Login from "./Login";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { debounce } from 'lodash'; // Import debounce from lodash
+import { debounce } from "lodash"; // Import debounce from lodash
 import Autocomplete from "@mui/material/Autocomplete";
+import Divider from "@mui/material/Divider";
+
 import {
   Button,
   Container,
@@ -35,6 +37,7 @@ const week_days = [
   "Saturday",
   "Sunday",
 ];
+
 // Initial state for a single form
 const initialFormState = {
   firstName: "",
@@ -65,16 +68,15 @@ const DynamicForm = () => {
     // Add other fields as necessary
   });
   const handleFieldBlur = (fieldName) => {
-    setFieldValidation(prevState => ({
+    setFieldValidation((prevState) => ({
       ...prevState,
-      [fieldName]: { ...prevState[fieldName], touched: true }
+      [fieldName]: { ...prevState[fieldName], touched: true },
     }));
   };
 
   // Inside your component
-  const { getIdToken } = useAuth(); // Destructure to get the getIdToken function
+  const { getIdToken, showWelcomeMessage } = useAuth(); // Destructure to get the getIdToken function
   const [resetCounter, setResetCounter] = useState(0);
-
 
   const [forms, setForms] = useState([{ id: 1, collapsed: false }]);
   const [daysAndHours, setDaysAndHours] = useState({
@@ -91,10 +93,10 @@ const DynamicForm = () => {
     if (action.type === "resetForm") {
       return state.map((form, index) => {
         if (index === action.index) {
-          initialFormState.serviceDays.map(() => "") // Reset hoursPerDay based on serviceDays
-          return { 
-            ...initialFormState, 
-            hoursPerDay: initialFormState.serviceDays.map(() => "") 
+          initialFormState.serviceDays.map(() => ""); // Reset hoursPerDay based on serviceDays
+          return {
+            ...initialFormState,
+            hoursPerDay: initialFormState.serviceDays.map(() => ""),
           };
         }
         return form;
@@ -189,7 +191,6 @@ const DynamicForm = () => {
   const handleNameSelect = (event) => {
     setSelectedFirstName(event.target.value); // Corrected
   };
-  
 
   // Inside your component
   const [nameSuggestions, setNameSuggestions] = useState([]);
@@ -200,132 +201,185 @@ const DynamicForm = () => {
       const token = await getIdToken();
       fetch(`http://localhost:8080/api/users/search?firstName=${value}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       })
-      .then(response => response.json())
-      .then(data => {
-        setNameSuggestions(data);
-      })
-      .catch(error => console.error('Error fetching suggestions:', error));
+        .then((response) => response.json())
+        .then((data) => {
+          setNameSuggestions(data);
+        })
+        .catch((error) => console.error("Error fetching suggestions:", error));
     }
   };
 
-const handleSelectName = async (firstName, index) => {
-  setSelectedFirstName(firstName);
-  if (firstName && nameSuggestions.includes(firstName)) {
+  const handleSelectName = async (firstName, index) => {
+    setSelectedFirstName(firstName);
+    if (firstName && nameSuggestions.includes(firstName)) {
       // Call the debounced autocomplete function only if the selected name is in the suggestions
       handleDebouncedAutocomplete(firstName, index, dispatch, getIdToken);
-  }
-  // Do nothing if the name is not in the suggestions.
-  // This allows the user to continue typing a new name without interruption.
-};
+    }
+    // Do nothing if the name is not in the suggestions.
+    // This allows the user to continue typing a new name without interruption.
+  };
 
+  const AUTOCOMPLETE_TOAST_ID = "autocomplete-toast";
 
-
-  const AUTOCOMPLETE_TOAST_ID = 'autocomplete-toast';
-
-  const handleDebouncedAutocomplete = debounce(async (firstName, index, dispatch, getIdToken) => {
-    let toastId;
-    if (firstName.length > 1) {
-      try {
-        if (!toast.isActive(AUTOCOMPLETE_TOAST_ID)) {
-          toast.info("Requesting autocompletion...", { autoClose: false, toastId: AUTOCOMPLETE_TOAST_ID });
-        }
+  const handleDebouncedAutocomplete = debounce(
+    async (firstName, index, dispatch, getIdToken) => {
+      let toastId;
+      if (firstName.length > 1) {
+        try {
+          if (!toast.isActive(AUTOCOMPLETE_TOAST_ID)) {
+            toast.info("Requesting autocompletion...", {
+              autoClose: false,
+              toastId: AUTOCOMPLETE_TOAST_ID,
+            });
+          }
           const token = await getIdToken(); // Retrieve the Firebase ID token
-          const response = await fetch(`http://localhost:8080/api/users/details?firstName=${firstName}`, {
-            headers: {
-              'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
-            },
-          });
+          const response = await fetch(
+            `http://localhost:8080/api/users/details?firstName=${firstName}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+              },
+            }
+          );
           if (!response.ok) {
             console.log("can't connect to the backend");
             throw new Error(`HTTP error! status: ${response.status}`);
           }
           const data = await response.json();
-  
-        // Autofill only if the response contains a valid "First Name"
-        if (data.firstName) {
-          const receivedData = data; // The received data from the backend
-          dispatch({ type: "onChange", index, fieldName: "firstName", value: receivedData.firstName });
-          dispatch({ type: "onChange", index, fieldName: "lastName", value: receivedData.lastName });
-          dispatch({ type: "onChange", index, fieldName: "idNumber", value: receivedData.idNumber });
-          dispatch({ type: "onChange", index, fieldName: "address", value: receivedData.address });
-          dispatch({ type: "onChange", index, fieldName: "birthday", value: receivedData.birthday });
-          dispatch({ type: "onChange", index, fieldName: "zipcode", value: receivedData.zipcode });
-          dispatch({ type: "onChange", index, fieldName: "rate", value: receivedData.rate.toString() });
-  
-          // Autopopulate service days and hours
-          // Autopopulate service days and hours
-          if (receivedData.dateRanges && receivedData.dateRanges.length > 0) {
-            const dateRange = receivedData.dateRanges[0];
-            const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-            daysOfWeek.forEach((day) => {
-              const dayKey = day.toLowerCase() + "Hours"; // Convert day to lowercase and add "Hours" to match the field name
-              const hours = dateRange[dayKey];
-              
-              if (hours !== undefined && hours > 0) {
-                const dayUpper = day.toUpperCase();
-                dispatch({ type: "checkbox", index, day: dayUpper }); // This will check the day
-                dispatch({ type: "hours", index, day: dayUpper, value: hours.toString() }); // This will set the hours
-              }
+          // Autofill only if the response contains a valid "First Name"
+          if (data.firstName) {
+            const receivedData = data; // The received data from the backend
+            dispatch({
+              type: "onChange",
+              index,
+              fieldName: "firstName",
+              value: receivedData.firstName,
             });
+            dispatch({
+              type: "onChange",
+              index,
+              fieldName: "lastName",
+              value: receivedData.lastName,
+            });
+            dispatch({
+              type: "onChange",
+              index,
+              fieldName: "idNumber",
+              value: receivedData.idNumber,
+            });
+            dispatch({
+              type: "onChange",
+              index,
+              fieldName: "address",
+              value: receivedData.address,
+            });
+            dispatch({
+              type: "onChange",
+              index,
+              fieldName: "birthday",
+              value: receivedData.birthday,
+            });
+            dispatch({
+              type: "onChange",
+              index,
+              fieldName: "zipcode",
+              value: receivedData.zipcode,
+            });
+            dispatch({
+              type: "onChange",
+              index,
+              fieldName: "rate",
+              value: receivedData.rate.toString(),
+            });
+
+            // Autopopulate service days and hours
+            // Autopopulate service days and hours
+            if (receivedData.dateRanges && receivedData.dateRanges.length > 0) {
+              const dateRange = receivedData.dateRanges[0];
+              const daysOfWeek = [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+              ];
+
+              daysOfWeek.forEach((day) => {
+                const dayKey = day.toLowerCase() + "Hours"; // Convert day to lowercase and add "Hours" to match the field name
+                const hours = dateRange[dayKey];
+
+                if (hours !== undefined && hours > 0) {
+                  const dayUpper = day.toUpperCase();
+                  dispatch({ type: "checkbox", index, day: dayUpper }); // This will check the day
+                  dispatch({
+                    type: "hours",
+                    index,
+                    day: dayUpper,
+                    value: hours.toString(),
+                  }); // This will set the hours
+                }
+              });
+            }
+
+            toast.update(AUTOCOMPLETE_TOAST_ID, {
+              render: "Autocompletion complete!",
+              //type: toast.TYPE.SUCCESS,
+              autoClose: 5000,
+            }); // Update the existing toast to show success
+          } else {
+            toast.update(AUTOCOMPLETE_TOAST_ID, {
+              render: "No data found for autocompletion.",
+              //type: toast.TYPE.INFO,
+              autoClose: 5000,
+            }); // Update the existing toast to show no data found
           }
-
-
-          
+        } catch (error) {
+          console.error("Error fetching user details:", error);
           toast.update(AUTOCOMPLETE_TOAST_ID, {
-            render: "Autocompletion complete!",
-            //type: toast.TYPE.SUCCESS,
-            autoClose: 5000
-          }); // Update the existing toast to show success
-        } else {
-          toast.update(AUTOCOMPLETE_TOAST_ID, {
-            render: "No data found for autocompletion.",
-            //type: toast.TYPE.INFO,
-            autoClose: 5000
-          }); // Update the existing toast to show no data found
+            render: "Failed to autocomplete data. No user data found.",
+            //type: toast.TYPE.ERROR,
+            autoClose: 5000,
+          }); // Update the existing toast to show error
         }
-      } catch (error) {
-        console.error('Error fetching user details:', error);
-        toast.update(AUTOCOMPLETE_TOAST_ID, {
-        render: "Failed to autocomplete data. No user data found.",
-          //type: toast.TYPE.ERROR,
-          autoClose: 5000
-        }); // Update the existing toast to show error
       }
+    },
+    500
+  );
+
+  // The main function for handling the first name change
+  const handleFirstNameChange = async (e, index, dispatch, getIdToken) => {
+    const firstName = e.target.value;
+    dispatch({
+      type: "onChange",
+      index: index,
+      fieldName: "firstName",
+      value: firstName,
+    });
+
+    if (!toast.isActive(AUTOCOMPLETE_TOAST_ID)) {
+      toast.info("Requesting autocompletion...", {
+        autoClose: false,
+        toastId: AUTOCOMPLETE_TOAST_ID,
+      });
+    }
+    suggestNames(firstName); // Call suggestNames for autocomplete
+
+    // Call the debounced function
+    //handleDebouncedAutocomplete(firstName, index, dispatch, getIdToken);
   };
-}, 500);
 
-// The main function for handling the first name change
-const handleFirstNameChange = async (e, index, dispatch, getIdToken) => {
-  const firstName = e.target.value;
-  dispatch({
-    type: "onChange",
-    index: index,
-    fieldName: "firstName",
-    value: firstName,
-  });
-
-  if (!toast.isActive(AUTOCOMPLETE_TOAST_ID)) {
-    toast.info("Requesting autocompletion...", { autoClose: false, toastId: AUTOCOMPLETE_TOAST_ID });
-  }
-  suggestNames(firstName); // Call suggestNames for autocomplete
-
-  // Call the debounced function
-  //handleDebouncedAutocomplete(firstName, index, dispatch, getIdToken);
-};
-  
   const { currentUser, signOut } = useAuth();
 
   // useEffect to show toast when user signs in
   useEffect(() => {
-    if (currentUser) {
-      toast.success(`Welcome back, ${currentUser.email}!`); // Display user's email or any other identifier
-    }
-  }, [currentUser]); // Dependency array with currentUser
-
+    showWelcomeMessage();
+  }, []);
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -350,16 +404,18 @@ const handleFirstNameChange = async (e, index, dispatch, getIdToken) => {
     }));
   };
 
-
   const handleReset = (index) => {
-    const isFormEmpty = Object.keys(initialFormState).every(key => {
-      return formData[index][key] === initialFormState[key] ||
-             (Array.isArray(formData[index][key]) && formData[index][key].length === 0);
+    const isFormEmpty = Object.keys(initialFormState).every((key) => {
+      return (
+        formData[index][key] === initialFormState[key] ||
+        (Array.isArray(formData[index][key]) &&
+          formData[index][key].length === 0)
+      );
     });
-  
+
     if (!isFormEmpty) {
       dispatch({ type: "resetForm", index });
-  
+
       // Resetting related states
       setDaysAndHours({
         monday: { checked: false, hours: "" },
@@ -371,7 +427,7 @@ const handleFirstNameChange = async (e, index, dispatch, getIdToken) => {
         sunday: { checked: false, hours: "" },
       });
       setSelectedFirstName("");
-  
+
       // Resetting field validation state if necessary
       setFieldValidation({
         firstName: { touched: false, valid: true },
@@ -379,18 +435,18 @@ const handleFirstNameChange = async (e, index, dispatch, getIdToken) => {
         idNumber: { touched: false, valid: true },
         // ... other fields
       });
-  
-      toast.success(`Claim Form ${index + 1} reset successfully.`, { autoClose: 5000 });
+
+      toast.success(`Claim Form ${index + 1} reset successfully.`, {
+        autoClose: 5000,
+      });
     } else {
-      toast.error(`Claim Form ${index + 1} is already empty.`, { autoClose: 5000 });
+      toast.error(`Claim Form ${index + 1} is already empty.`, {
+        autoClose: 5000,
+      });
     }
     setSelectedFirstName("");
-    setResetCounter(resetCounter => resetCounter + 1);
+    setResetCounter((resetCounter) => resetCounter + 1);
   };
-  
-
-  
-
 
   const addForm = () => {
     dispatch({ type: "addForm" });
@@ -434,76 +490,79 @@ const handleFirstNameChange = async (e, index, dispatch, getIdToken) => {
   }
   //function to clean up skipped dates before submitting by putting them into array as single dates
   // Function to get dates between two dates
-function getDatesInRange(startDate, endDate) {
-  const dateArray = [];
-  let currentDate = new Date(startDate);
+  function getDatesInRange(startDate, endDate) {
+    const dateArray = [];
+    let currentDate = new Date(startDate);
 
-  while (currentDate <= new Date(endDate)) {
-    dateArray.push(currentDate.toISOString().split('T')[0]);
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-  return dateArray;
-}
-const handleSubmit = async () => {
-  // Check if any of the required fields are empty
-  for (const form of formData) {
-    if (!form.firstName || !form.lastName) {
-      toast.error("Please fill in all required fields.");
-      return;
+    while (currentDate <= new Date(endDate)) {
+      dateArray.push(currentDate.toISOString().split("T")[0]);
+      currentDate.setDate(currentDate.getDate() + 1);
     }
+    return dateArray;
   }
-  const preparedData = formData.map(form => {
-    // Process the 'datesToSkip' field
-    const processedDatesToSkip = [];
-    form.datesToSkip.split(',').forEach(dateEntry => {
-      if (dateEntry.includes(':')) {
-        // Handle date range
-        const [startDate, endDate] = dateEntry.split(':');
-        const dateRange = getDatesInRange(startDate, endDate);
-        processedDatesToSkip.push(...dateRange);
-      } else {
-        // Handle single date
-        processedDatesToSkip.push(dateEntry);
+  const handleSubmit = async () => {
+    // Check if any of the required fields are empty
+    for (const form of formData) {
+      if (!form.firstName || !form.lastName) {
+        toast.error("Please fill in all required fields.");
+        return;
       }
-    });
-
-    return {
-      ...form,
-      rate: parseFloat(form.rate) || 0,
-      datesToSkip: processedDatesToSkip,
-      serviceHours: form.serviceDays.reduce((acc, day, index) => {
-        acc[day] = parseFloat(form.hoursPerDay[index]) || 0;
-        return acc;
-      }, {})
-    };
-  });
-
-  const payload = { requests: preparedData }; // Wrap in 'requests' key
-
-  try {
-    toast.info("Submitting claim...");
-    const token = await getIdToken(); // Retrieve the Firebase ID token
-    const response = await fetch('http://localhost:8080/api/receiveBatchData', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
-      },
-      body: JSON.stringify(payload),
-    });
-    if (!response.ok) {
-      toast.error("claim submission failed");
-      throw new Error(`Error: ${response.status}`);
     }
+    const preparedData = formData.map((form) => {
+      // Process the 'datesToSkip' field
+      const processedDatesToSkip = [];
+      form.datesToSkip.split(",").forEach((dateEntry) => {
+        if (dateEntry.includes(":")) {
+          // Handle date range
+          const [startDate, endDate] = dateEntry.split(":");
+          const dateRange = getDatesInRange(startDate, endDate);
+          processedDatesToSkip.push(...dateRange);
+        } else {
+          // Handle single date
+          processedDatesToSkip.push(dateEntry);
+        }
+      });
 
-    const blob = await response.blob();
-    const dynamicFilename = "Batch_Claims_Data.zip"; // Use a suitable filename
-    downloadBlob(blob, dynamicFilename);
-  } catch (error) {
-    console.error("Error generating or downloading file:", error);
-  }
-};  
-  
+      return {
+        ...form,
+        rate: parseFloat(form.rate) || 0,
+        datesToSkip: processedDatesToSkip,
+        serviceHours: form.serviceDays.reduce((acc, day, index) => {
+          acc[day] = parseFloat(form.hoursPerDay[index]) || 0;
+          return acc;
+        }, {}),
+      };
+    });
+
+    const payload = { requests: preparedData }; // Wrap in 'requests' key
+
+    try {
+      toast.info("Submitting claim...");
+      const token = await getIdToken(); // Retrieve the Firebase ID token
+      const response = await fetch(
+        "http://localhost:8080/api/receiveBatchData",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+      if (!response.ok) {
+        toast.error("claim submission failed");
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const dynamicFilename = "Batch_Claims_Data.zip"; // Use a suitable filename
+      downloadBlob(blob, dynamicFilename);
+    } catch (error) {
+      console.error("Error generating or downloading file:", error);
+    }
+  };
+
   // console.log(arrayValue, formData[0].datesToSkip)
   console.log("Current selectedFirstName:", selectedFirstName);
   return (
@@ -521,70 +580,87 @@ const handleSubmit = async () => {
         // <Container >
         <Paper sx={{ p: 2, borderRadius: 1, mb: 2 }} key={index} elevation={3}>
           <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                mb: 2,
-                width: '100%' // Ensure the box takes the full width
-              }}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 2,
+              width: "100%", // Ensure the box takes the full width
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              Claim Form {index + 1}
+            </Typography>
+
+            <Box
+              sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}
             >
-              <Typography variant="h6" gutterBottom>
-                Claim Form {index + 1}
-              </Typography>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => handleReset(index)}
+              >
+                Reset Form
+              </Button>
+            </Box>
 
-              <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
-                <Button variant="outlined" color="secondary" onClick={() => handleReset(index)}>
-                  Reset Form
-                </Button>
-              </Box>
-
-              <IconButton onClick={() => toggleCollapse(index)}>
-                <ExpandMoreIcon rotate={form.collapsed ? 0 : 180} />
-              </IconButton>
+            <IconButton onClick={() => toggleCollapse(index)}>
+              <ExpandMoreIcon rotate={form.collapsed ? 0 : 180} />
+            </IconButton>
           </Box>
           <Collapse in={!form.collapsed}>
             <Grid container spacing={2}>
               <Grid item xs={12} md={8}>
-              <Autocomplete
-                id="name-autocomplete"
-                key={`autocomplete-${resetCounter}`} 
-                options={nameSuggestions}
-                freeSolo
-                onInputChange={(event, newValue) => {
-                  suggestNames(newValue);
-                }}
-                value={selectedFirstName}
-                onChange={(event, newValue) => {
-                  setSelectedFirstName(newValue);
-                  handleSelectName(newValue, index);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="First Name"
-                    fullWidth
-                    sx={{ mb: 2 }}
-                    required
-                    onChange={(e) => {
-                      dispatch({
-                        type: "onChange",
-                        index: index,
-                        fieldName: "firstName",
-                        value: e.target.value,
-                      });
-                    }}
-                    inputProps={{ ...params.inputProps, id: `${index}-firstName` }}
-                  />
-                )}
-              />
+                <Autocomplete
+                  id="name-autocomplete"
+                  key={`autocomplete-${resetCounter}`}
+                  options={nameSuggestions}
+                  freeSolo
+                  onInputChange={(event, newValue) => {
+                    suggestNames(newValue);
+                  }}
+                  value={selectedFirstName}
+                  onChange={(event, newValue) => {
+                    setSelectedFirstName(newValue);
+                    handleSelectName(newValue, index);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="First Name"
+                      fullWidth
+                      sx={{ mb: 2 }}
+                      required
+                      onChange={(e) => {
+                        dispatch({
+                          type: "onChange",
+                          index: index,
+                          fieldName: "firstName",
+                          value: e.target.value,
+                        });
+                      }}
+                      inputProps={{
+                        ...params.inputProps,
+                        id: `${index}-firstName`,
+                      }}
+                    />
+                  )}
+                />
 
                 <TextField
                   label="Last Name"
                   fullWidth
                   sx={{ mb: 2 }}
-                  error={fieldValidation.lastName.touched && !fieldValidation.lastName.valid}
-                  helperText={fieldValidation.lastName.touched && !fieldValidation.lastName.valid ? "This field is required" : ""}
+                  error={
+                    fieldValidation.lastName.touched &&
+                    !fieldValidation.lastName.valid
+                  }
+                  helperText={
+                    fieldValidation.lastName.touched &&
+                    !fieldValidation.lastName.valid
+                      ? "This field is required"
+                      : ""
+                  }
                   value={formData[index].lastName}
                   onBlur={() => handleFieldBlur("lastName")}
                   onChange={(e) =>
@@ -673,6 +749,30 @@ const handleSubmit = async () => {
                     })
                   }
                 />
+                <TextField
+                  label="Rate"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                  inputProps={{
+                    id: `${index}-rate`,
+                    "aria-required": true,
+                    //inputMode: "numeric", // Set inputMode to "numeric"
+                    //step: "0.01", // Optional: To allow decimal values
+                  }}
+                  value={formData[index].rate}
+                  onChange={(e) =>
+                    dispatch({
+                      type: "onChange",
+                      index: index,
+                      fieldName: "rate",
+                      value: e.target.value,
+                    })
+                  }
+                />
+                <Divider
+                  sx={{ mb: 2 }}
+                  style={{ backgroundColor: "lightred" }}
+                />
                 <Typography variant="h6" gutterBottom>
                   Service Days and Hours:
                 </Typography>
@@ -739,6 +839,13 @@ const handleSubmit = async () => {
                     </React.Fragment>
                   ))}
                 </Grid>
+                <Divider
+                  sx={{ mb: 2, mt: 2 }}
+                  style={{ backgroundColor: "lightred" }}
+                />
+                <Typography variant="h6" gutterBottom>
+                  Service Start Date and End Date:
+                </Typography>
                 <TextField
                   label="Start Date"
                   fullWidth
@@ -779,6 +886,13 @@ const handleSubmit = async () => {
                     })
                   }
                 />
+                <Divider
+                  sx={{ mb: 2 }}
+                  style={{ backgroundColor: "lightred" }}
+                />
+                <Typography variant="h6" gutterBottom>
+                  Missed Service Days:
+                </Typography>
                 <TextField
                   label="Dates to Skip"
                   fullWidth
@@ -797,33 +911,15 @@ const handleSubmit = async () => {
                     })
                   }
                 />
-                <TextField
-                  label="Rate"
-                  fullWidth
-                  sx={{ mb: 2 }}
-                  type="number"
-                  inputProps={{
-                    id: `${index}-rate`,
-                    "aria-required": true,
-                    step: "0.01", // Optional: To allow decimal values
-                  }}
-                  value={formData[index].rate}
-                  onChange={(e) =>
-                    dispatch({
-                      type: "onChange",
-                      index: index,
-                      fieldName: "rate",
-                      value: e.target.value,
-                    })
-                  }
-                />
               </Grid>
               <Grid item xs={12} md={4}>
                 {/* Add your calendar component or visualization here */}
                 <Container
                   sx={{ border: 1, p: 2, borderRadius: 1, height: "100%" }}
                 >
-                  <Typography variant="h6" style={{ textAlign: 'center' }}>Calendar Visualization</Typography>
+                  <Typography variant="h6" style={{ textAlign: "center" }}>
+                    Calendar Visualization
+                  </Typography>
                   <CalendarComponent
                     highlightedRange={[
                       formData[index].startDate,
@@ -832,14 +928,10 @@ const handleSubmit = async () => {
                     excludeDateRange={formData[index].datesToSkip}
                     selectedDays={formData[index].serviceDays}
                   />
-                  {/* <DateCalendarValue
-                    range={[formData[index].startDate, formData[index].endDate]}
-                  /> */}
                 </Container>
               </Grid>
             </Grid>
           </Collapse>
-
           {forms.length > 1 && (
             <IconButton onClick={() => deleteForm(index)} color="error">
               <DeleteIcon />
@@ -860,9 +952,14 @@ const handleSubmit = async () => {
         <Button variant="contained" onClick={handleSubmit} sx={{ mt: 2 }}>
           Submit Form
         </Button>
-        <Button variant="outlined" color="primary" onClick={handleSignOut} sx={{ mt: 2 }}>
-        Sign Out
-      </Button>
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={handleSignOut}
+          sx={{ mt: 2 }}
+        >
+          Sign Out
+        </Button>
       </Stack>
     </Container>
   );
